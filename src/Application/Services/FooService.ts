@@ -1,6 +1,7 @@
 import { IFooService } from "#Application/Interfaces/IFooService.js";
 import { IFooDto } from "#Domain/Dto/IFooDto.js";
 import { DITypes } from "#Globals/DI/DITypes.js";
+import { PrismaClient } from "#Infrastrucure/Database/Prisma/index.js";
 import { inject, injectable } from "inversify";
 
 @injectable()
