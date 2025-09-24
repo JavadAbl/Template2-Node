@@ -1,5 +1,5 @@
 // BaseRepository.ts
-export abstract class BaseRepository<TModel, TFindManyArgs, TFindUniqueArgs, TCreateArgs, TUpdateArgs, TDeleteArgs> {
+export class BaseRepository<TModel, TFindManyArgs, TFindUniqueArgs, TCreateArgs, TUpdateArgs, TDeleteArgs> {
   constructor(
     private readonly delegate: {
       findMany(args?: TFindManyArgs): Promise<TModel[]>;
