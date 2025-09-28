@@ -18,6 +18,6 @@ export class UserRoutes {
   }
 
   private initializeRoutes(): void {
-    this.router.get("/register", (req, res) => this.userController.register(req, res));
+    this.router.post("/register", (req, res) => this.userController.register(req, res));
   }
 }

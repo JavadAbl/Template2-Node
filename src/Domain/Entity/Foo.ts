@@ -1,1 +1,1 @@
-export { Foo } from "#Infrastrucure/Database/Prisma/index.js";
+export { Foo } from "#Infrastructure/Database/Prisma/index.js";

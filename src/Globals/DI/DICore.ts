@@ -4,14 +4,14 @@ import { IFooService } from "#Application/Interfaces/IFooService.js";
 import { AppRoutes } from "#API/Routes/AppRoutes.js";
 import { IUserService } from "#Application/Interfaces/IUserService.js";
 import { UserService } from "#Application/Services/UserService.js";
-import { UserRepository } from "#Infrastrucure/Database/Repository/UserRepository.js";
-import { IUserRepository } from "#Infrastrucure/Database/Interfaces/IUserRepository.js";
-import { FooRepository } from "#Infrastrucure/Database/Repository/FooRepository.js";
-import { IFooRepository } from "#Infrastrucure/Database/Interfaces/IFooRepository.js";
+import { UserRepository } from "#Infrastructure/Database/Repository/UserRepository.js";
+import { IUserRepository } from "#Infrastructure/Database/Interfaces/IUserRepository.js";
+import { FooRepository } from "#Infrastructure/Database/Repository/FooRepository.js";
+import { IFooRepository } from "#Infrastructure/Database/Interfaces/IFooRepository.js";
 import { FooService } from "#Application/Services/FooService.js";
 import { UserController } from "#API/Controllers/UserController.js";
 import { UserRoutes } from "#API/Routes/UserRoutes.js";
-import { PrismaClient } from "#Infrastrucure/Database/Prisma/index.js";
+import { PrismaClient } from "#Infrastructure/Database/Prisma/index.js";
 
 const container = new Container();
 

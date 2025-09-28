@@ -2,8 +2,8 @@
 
 import { IFooService } from "#Application/Interfaces/IFooService.js";
 import { DITypes } from "#Globals/DI/DITypes.js";
-import { IFooRepository } from "#Infrastrucure/Database/Interfaces/IFooRepository.js";
-import { Prisma, Foo } from "#Infrastrucure/Database/Prisma/index.js";
+import { IFooRepository } from "#Infrastructure/Database/Interfaces/IFooRepository.js";
+import { Prisma, Foo } from "#Infrastructure/Database/Prisma/index.js";
 import { inject, injectable } from "inversify";
 import { BaseService } from "./BaseService.js";
 

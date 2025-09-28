@@ -1,1 +1,1 @@
-export { User } from "#Infrastrucure/Database/Prisma/index.js";
+export { User } from "#Infrastructure/Database/Prisma/index.js";

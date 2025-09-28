@@ -1,30 +1,27 @@
-// UserService.ts
-
 import { IUserService } from "#Application/Interfaces/IUserService.js";
+import { IUserDto, toUserDto } from "#Domain/Dto/User/IUserDto.js";
 import { DITypes } from "#Globals/DI/DITypes.js";
-import { IUserRepository } from "#Infrastrucure/Database/Interfaces/IUserRepository.js";
-import { Prisma, User } from "#Infrastrucure/Database/Prisma/index.js";
+import { IUserRepository } from "#Infrastructure/Database/Interfaces/IUserRepository.js";
 import { inject, injectable } from "inversify";
-import { BaseService } from "./BaseService.js";
+import { Prisma } from "#Infrastructure/Database/Prisma/index.js";
+import { AppError } from "#Globals/Utils/AppError.js";
 
 @injectable()
-export class UserService
-  extends BaseService<
-    User,
-    Prisma.UserFindManyArgs,
-    Prisma.UserFindUniqueArgs,
-    Prisma.UserCreateArgs,
-    Prisma.UserUpdateArgs,
-    Prisma.UserDeleteArgs
-  >
-  implements IUserService
-{
-  constructor(@inject(DITypes.UserRepository) repository: IUserRepository) {
-    super(repository);
+export class UserService implements IUserService {
+  constructor(@inject(DITypes.UserRepository) private readonly rep: IUserRepository) {}
+
+  async create(criteria: Prisma.UserCreateArgs): Promise<IUserDto> {
+    const existingUser = await this.findOne({ where: { username: criteria.data.username } });
+
+    if (existingUser) throw new AppError("This user is already exists");
+
+    const user = await this.rep.create(criteria);
+
+    return user;
   }
 
-  // Example of business logic beyond plain CRUD
-  async findByUsername(username: string): Promise<User | null> {
-    return this.findUnique({ where: { username } });
+  async findOne(criteria: Prisma.UserFindFirstArgs): Promise<IUserDto | undefined> {
+    const user = await this.rep.findOne(criteria);
+    return toUserDto(user);
   }
 }
