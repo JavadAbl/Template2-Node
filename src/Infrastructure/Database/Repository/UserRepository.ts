@@ -15,7 +15,7 @@ export class UserRepository implements IUserRepository {
     return this.prisma.user.findMany(criteria);
   }
 
-  findUnique(criteria: Prisma.UserFindUniqueArgs): Promise<User | undefined> {
+  findUnique(criteria: Prisma.UserFindUniqueArgs): Promise<User | null> {
     return this.prisma.user.findUnique(criteria);
   }
 

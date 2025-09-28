@@ -7,6 +7,8 @@ class AppConfig {
   DATABASE_URL?: string;
   HTTP_PORT?: string;
   HTTP_ADDRESS?: string;
+  REDIS_ADDRESS?: string;
+  REDIS_PORT?: string;
 
   constructor() {
     dotenv.config();
@@ -14,6 +16,10 @@ class AppConfig {
     this.DATABASE_URL = process.env.DATABASE_URL;
     this.HTTP_PORT = process.env.HTTP_PORT;
     this.HTTP_ADDRESS = process.env.HTTP_ADDRESS;
+    this.REDIS_ADDRESS = process.env.REDIS_ADDRESS;
+    this.REDIS_PORT = process.env.REDIS_PORT;
+
+    this.validateConfig();
   }
 
   validateConfig() {

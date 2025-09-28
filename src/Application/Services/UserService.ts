@@ -20,7 +20,7 @@ export class UserService implements IUserService {
     return user;
   }
 
-  async findOne(criteria: Prisma.UserFindFirstArgs): Promise<IUserDto | undefined> {
+  async findOne(criteria: Prisma.UserFindFirstArgs): Promise<IUserDto | null> {
     const user = await this.rep.findOne(criteria);
     return toUserDto(user);
   }
