@@ -8,6 +8,7 @@ import { IUserRepository } from "#Infrastructure/Database/Interfaces/IUserReposi
 import { UserController } from "#API/Controllers/UserController.js";
 import { UserRoutes } from "#API/Routes/UserRoutes.js";
 import { PrismaClient } from "#Infrastructure/Database/Prisma/index.js";
+import { UserCache } from "#Infrastructure/Cache/UserCache.js";
 
 const container = new Container();
 
@@ -24,5 +25,8 @@ container.bind<UserRoutes>(DITypes.UserRoutes).to(UserRoutes).inSingletonScope()
 // Bind Repositories
 container.bind<PrismaClient>(DITypes.PrismaClient).toConstantValue(new PrismaClient());
 container.bind<IUserRepository>(DITypes.UserRepository).to(UserRepository).inSingletonScope();
+
+// Bind Caches
+container.bind<UserCache>(DITypes.UserCache).to(UserCache).inSingletonScope();
 
 export { container };

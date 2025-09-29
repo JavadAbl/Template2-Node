@@ -26,7 +26,7 @@ export class AppServer {
       this.setupErrorHandler(this.app);
       this.setupHttpServer(this.app);
     } catch (error) {
-      logger.error(error);
+      logger.error(error, "Sd");
       process.exit(1);
     }
   }
@@ -35,7 +35,7 @@ export class AppServer {
   private setupSecurityMiddlewares(app: Application): void {
     app.use(
       cors({
-        origin: config.CLIENT_URL,
+        origin: config?.CORS_ORIGIN?.split(",") || "*",
         credentials: true,
         allowedHeaders: ["Origin", "X-Requested-With", "Content-Type", "Authorization"],
         methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],

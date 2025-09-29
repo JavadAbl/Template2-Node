@@ -5,10 +5,14 @@ import { IUserRepository } from "#Infrastructure/Database/Interfaces/IUserReposi
 import { inject, injectable } from "inversify";
 import { Prisma } from "#Infrastructure/Database/Prisma/index.js";
 import { AppError } from "#Globals/Utils/AppError.js";
+import { UserCache } from "#Infrastructure/Cache/UserCache.js";
 
 @injectable()
 export class UserService implements IUserService {
-  constructor(@inject(DITypes.UserRepository) private readonly rep: IUserRepository) {}
+  constructor(
+    @inject(DITypes.UserRepository) private readonly rep: IUserRepository,
+    @inject(DITypes.UserCache) private readonly userCache: UserCache,
+  ) {}
 
   async create(criteria: Prisma.UserCreateArgs): Promise<IUserDto> {
     const existingUser = await this.findOne({ where: { username: criteria.data.username } });
@@ -17,11 +21,14 @@ export class UserService implements IUserService {
 
     const user = await this.rep.create(criteria);
 
-    return user;
+    const userDto = toUserDto(user);
+    await this.userCache.set(String(user.id), userDto, 3600);
+
+    return userDto;
   }
 
   async findOne(criteria: Prisma.UserFindFirstArgs): Promise<IUserDto | null> {
     const user = await this.rep.findOne(criteria);
-    return toUserDto(user);
+    return user ? toUserDto(user) : null;
   }
 }

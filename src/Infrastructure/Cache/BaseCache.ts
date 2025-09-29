@@ -1,21 +1,56 @@
-import { config } from "#Globals/Configs/AppConfig.js";
 import { AppLogger } from "#Globals/Utils/Logger.js";
-import { createClient } from "redis";
+import { RedisClientBuilder } from "#Infrastructure/Redis/RedisClientBuilder.js";
 
-export class BaseCache {
-  client: ReturnType<typeof createClient>;
-  logger;
+export abstract class BaseCache {
+  protected client;
+  protected logger;
+  private readonly prefix: string;
 
   constructor(cacheName: string) {
+    this.prefix = cacheName;
     this.logger = AppLogger.createLogger(cacheName);
+    this.client = RedisClientBuilder.getClient();
+  }
 
-    this.client = createClient({
-      url: config.REDIS_ADDRESS || "redis://localhost:6379",
-      commandOptions: { abortSignal: new AbortController().signal },
-    });
+  private buildKey(key: string): string {
+    return `${this.prefix}:${key}`;
+  }
 
-    this.client.on("error", (err) => {
-      this.logger.error("Redis Client Error", err);
-    });
+  async set(key: string, value: unknown, ttlSeconds?: number) {
+    const redisKey = this.buildKey(key);
+    try {
+      const data = JSON.stringify(value);
+      if (ttlSeconds) {
+        await this.client.setEx(redisKey, ttlSeconds, data);
+      } else {
+        await this.client.set(redisKey, data);
+      }
+      this.logger.info(`Cache set: ${redisKey}`);
+    } catch (err) {
+      this.logger.error(`Failed to set cache for key ${redisKey}`, err);
+      throw err;
+    }
+  }
+
+  async get<T>(key: string): Promise<T | null> {
+    const redisKey = this.buildKey(key);
+    try {
+      const data = await this.client.get(redisKey);
+      return data ? (JSON.parse(data) as T) : null;
+    } catch (err) {
+      this.logger.error(`Failed to get cache for key ${redisKey}`, err);
+      throw err;
+    }
+  }
+
+  async delete(key: string) {
+    const redisKey = this.buildKey(key);
+    try {
+      await this.client.del(redisKey);
+      this.logger.info(`Cache deleted: ${redisKey}`);
+    } catch (err) {
+      this.logger.error(`Failed to delete cache for key ${redisKey}`, err);
+      throw err;
+    }
   }
 }
