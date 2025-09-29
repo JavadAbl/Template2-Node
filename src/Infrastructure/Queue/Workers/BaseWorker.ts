@@ -1,30 +1,44 @@
+import { config } from "#Globals/Configs/AppConfig.js";
 import { AppLogger } from "#Globals/Utils/Logger.js";
-import { Worker, Job } from "bullmq";
+import { Worker } from "bullmq";
 
 export type HandlerMap<JobName extends string> = Record<JobName, (data: any) => Promise<any>>;
 
-export class BaseWorker<JobName extends string> {
-  private worker: Worker;
+export class BaseWorker {
+  private worker!: Worker;
   private logger = AppLogger.createLogger(BaseWorker.name);
+  queueName: string;
 
-  constructor(queueName: string, handlers: HandlerMap<JobName>) {
+  constructor(queueName: string) {
     this.logger.info(`Starting worker for queue: ${queueName}`);
+    this.queueName = queueName;
+    this.setupWorker();
+  }
 
-    this.worker = new Worker(queueName, async (job: Job) => {
-      const handler = handlers[job.name as JobName];
+  private setupWorker() {
+    this.worker = new Worker(
+      this.queueName,
+      async (job) => {
+        switch (job.name) {
+          case "send-email":
+            return await sendEmail(job.data);
+          case "process-image":
+            return await processImage(job.data);
+          default:
+            throw new Error(`Unknown job type: ${job.name}`);
+        }
+      },
+      {
+        connection: {
+          url: config.REDIS_ADDRESS,
+          username: config.REDIS_USERNAME,
+          password: config.REDIS_PASSWORD,
+        },
+      },
+    );
+  }
 
-      if (!handler) {
-        this.logger.warn(`No handler found for job: ${job.name}`);
-        return;
-      }
-
-      try {
-        this.logger.info(`Processing job: ${job.name}`);
-        return await handler(job.data);
-      } catch (err) {
-        this.logger.error(`Error processing job: ${job.name}`, err);
-        throw err;
-      }
-    });
+  protected startWorker() {
+    this.worker.run();
   }
 }

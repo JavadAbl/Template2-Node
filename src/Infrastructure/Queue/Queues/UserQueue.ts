@@ -11,6 +11,6 @@ export class UserQueue extends BaseQueue {
 
   createUserJob(payload: IRegisterUser): void {
     this.addJob<CreateUserJob>(UserJobs.CreateUser, payload);
-    // this.logger.info(`Job added: ${UserQueue.CreateUser}`, payload);
+    this.logger.info(`Job added: ${UserQueue.CreateUser}`, payload);
   }
 }

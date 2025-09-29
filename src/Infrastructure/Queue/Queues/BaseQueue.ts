@@ -45,24 +45,4 @@ export class BaseQueue {
       ...options,
     });
   }
-
-  protected processJob<T = any>(name: string, concurrency: number, callback: bullmq.Processor<T>) {
-    const worker = new bullmq.Worker(this.queue.name, (job) => callback(job), {
-      concurrency,
-      connection: this.queue.opts.connection ?? {
-        host: process.env.REDIS_HOST || "localhost",
-        port: Number(process.env.REDIS_PORT) || 6379,
-      },
-    });
-
-    worker.on("failed", (job, err) => {
-      this.logger?.error?.(`Job ${job?.name} failed: ${err.message}`);
-    });
-
-    worker.on("completed", (job) => {
-      this.logger?.info?.(`Job ${job?.name} completed successfully.`);
-    });
-
-    return worker;
-  }
 }
