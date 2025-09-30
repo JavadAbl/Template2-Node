@@ -1,17 +1,20 @@
 import { config } from "#Globals/Configs/AppConfig.js";
 import { AppLogger } from "#Globals/Utils/Logger.js";
 import { Worker } from "bullmq";
+import { JobContract } from "../Jobs/JobContract.js";
 
-export type HandlerMap<JobName extends string> = Record<JobName, (data: any) => Promise<any>>;
+// BaseWorker.ts
+export type JobHandler<T> = (data: T) => Promise<any>;
 
-export class BaseWorker {
+export class BaseWorker<T extends JobContract<any, any>> {
   private worker!: Worker;
   private logger = AppLogger.createLogger(BaseWorker.name);
-  queueName: string;
 
-  constructor(queueName: string) {
+  constructor(
+    private queueName: string,
+    private handlers: { [K in T["jobs"]]: JobHandler<T["payloads"][K]> },
+  ) {
     this.logger.info(`Starting worker for queue: ${queueName}`);
-    this.queueName = queueName;
     this.setupWorker();
   }
 
@@ -19,14 +22,11 @@ export class BaseWorker {
     this.worker = new Worker(
       this.queueName,
       async (job) => {
-        switch (job.name) {
-          case "send-email":
-            return await sendEmail(job.data);
-          case "process-image":
-            return await processImage(job.data);
-          default:
-            throw new Error(`Unknown job type: ${job.name}`);
+        const handler = this.handlers[job.name as T["jobs"]];
+        if (!handler) {
+          throw new Error(`Unknown job type: ${job.name}`);
         }
+        return handler(job.data);
       },
       {
         connection: {
@@ -36,9 +36,5 @@ export class BaseWorker {
         },
       },
     );
-  }
-
-  protected startWorker() {
-    this.worker.run();
   }
 }

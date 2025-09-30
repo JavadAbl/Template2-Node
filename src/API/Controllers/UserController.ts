@@ -15,4 +15,9 @@ export class UserController {
     const userDto = await this.userService.create({ data: req.body });
     res.status(201).send(userDto);
   }
+
+  public async get(req: Request<unknown, unknown, unknown, IRegisterUser>, res: Response) {
+    const userDto = await this.userService.create({ data: req.body });
+    res.status(201).send(userDto);
+  }
 }

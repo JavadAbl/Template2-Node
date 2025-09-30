@@ -5,13 +5,15 @@ import { createBullBoard } from "@bull-board/api";
 import { BullMQAdapter } from "@bull-board/api/bullMQAdapter";
 import { AppLogger } from "#Globals/Utils/Logger.js";
 import { config } from "#Globals/Configs/AppConfig.js";
+import { JobContract } from "../Jobs/JobContract.js";
 
 const bullMQAdapters: BullMQAdapter[] = [];
 
 export const expressAdapter = new ExpressAdapter();
 expressAdapter.setBasePath("/queues");
 
-export class BaseQueue {
+// BaseQueue.ts
+export class BaseQueue<T extends JobContract<any, any>> {
   queue: bullmq.Queue;
   logger;
 
@@ -29,19 +31,15 @@ export class BaseQueue {
     });
 
     bullMQAdapters.push(new BullMQAdapter(this.queue));
-
     createBullBoard({ queues: bullMQAdapters, serverAdapter: expressAdapter });
 
     this.logger = AppLogger.createLogger(queueName);
   }
 
-  protected addJob<T = any>(name: string, data: T, options?: JobsOptions) {
-    return this.queue.add(name, data, {
+  protected addJob<K extends T["jobs"]>(name: K, data: T["payloads"][K], options?: JobsOptions) {
+    return this.queue.add(name as string, data, {
       attempts: 3,
-      backoff: {
-        type: "exponential",
-        delay: 1000,
-      },
+      backoff: { type: "exponential", delay: 1000 },
       ...options,
     });
   }
