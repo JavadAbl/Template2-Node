@@ -6,6 +6,9 @@ import { inject, injectable } from "inversify";
 import { Prisma } from "#Infrastructure/Database/Prisma/index.js";
 import { AppError } from "#Globals/Utils/AppError.js";
 import { UserCache } from "#Infrastructure/Cache/UserCache.js";
+import { IQueryDto } from "#API/Interfaces/Dto/IQueryDto.js";
+import { buildFindManyArgs } from "#Globals/Utils/PrismaUtils.js";
+import { IFindUniqueDto } from "#API/Interfaces/Dto/IFindUniqueDto.js";
 
 @injectable()
 export class UserService implements IUserService {
@@ -13,6 +16,17 @@ export class UserService implements IUserService {
     @inject(DITypes.UserRepository) private readonly rep: IUserRepository,
     @inject(DITypes.UserCache) private readonly userCache: UserCache,
   ) {}
+  findUnique(criteria: IFindUniqueDto): Promise<IUserDto | null> {
+    return this.rep.findUnique({ where: { [criteria.field]: criteria.value } });
+  }
+
+  async findMany(criteria: IQueryDto): Promise<IUserDto[]> {
+    const args = buildFindManyArgs<"User">(criteria, {
+      searchableFields: ["username"],
+    });
+
+    return this.rep.findMany(args).then((users) => users.map(toUserDto));
+  }
 
   async create(criteria: Prisma.UserCreateArgs): Promise<IUserDto> {
     const existingUser = await this.findOne({ where: { username: criteria.data.username } });

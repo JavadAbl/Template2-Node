@@ -1,4 +1,4 @@
-export interface QueryDto {
+export interface IQueryDto {
   /** Zero‑based page index (default 0) */
   page?: number;
   /** Items per page (default 20, max 100) */
