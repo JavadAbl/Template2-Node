@@ -1,21 +1,25 @@
 import { AppError } from "#Globals/Utils/AppError.js";
 import status from "http-status";
-import { ZodSchema, ZodError } from "zod";
+import { ZodType, ZodError } from "zod";
+import { Request } from "express";
 
-export function zodValidation(schema: ZodSchema) {
+export function zodValidation(schema: ZodType<any>, dtoLocation: "body" | "params" | "query" = "body") {
   return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
     const originalMethod = descriptor.value;
 
     descriptor.value = async function (...args: any[]) {
       try {
-        const req = args[0];
+        const req: Request = args[0];
+        let dto = req[dtoLocation];
 
-        if (!req.body) {
-          throw new AppError("Request body (JSON) is required", status.BAD_REQUEST);
+        if (!dto || !Object.keys(dto).length) {
+          dto = undefined;
         }
 
-        const parsedBody = await schema.parseAsync(req.body);
-        req.body = parsedBody;
+        const parsedDto = await schema.safeParseAsync(dto);
+        console.log(parsedDto.data);
+
+        if (parsedDto.data) req[dtoLocation] = parsedDto.data;
         return originalMethod.apply(this, args);
       } catch (error: any) {
         if (error instanceof ZodError) {

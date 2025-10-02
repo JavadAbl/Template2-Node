@@ -1,7 +1,7 @@
 import { Container } from "inversify";
 import { DITypes } from "./DITypes.js";
 import { AppRoutes } from "#API/Routes/AppRoutes.js";
-import { IUserService } from "#Application/Interfaces/IUserService.js";
+import { IUserService } from "#Application/Interfaces/Services/IUserService.js";
 import { UserService } from "#Application/Services/UserService.js";
 import { UserRepository } from "#Infrastructure/Database/Repository/UserRepository.js";
 import { IUserRepository } from "#Infrastructure/Database/Interfaces/IUserRepository.js";

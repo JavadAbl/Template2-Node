@@ -10,8 +10,8 @@ export class UserRoutes {
 
   constructor(@inject(DITypes.UserController) private readonly userController: UserController) {
     this.router = Router();
-    this.initializeRoutes();
     this.router.use(this.path, this.router);
+    this.initializeRoutes();
   }
   public routes(): Router {
     return this.router;
@@ -20,6 +20,6 @@ export class UserRoutes {
   private initializeRoutes(): void {
     this.router.get("/", (req, res) => this.userController.get(req, res));
     this.router.get("/:id", (req, res) => this.userController.getById(req, res));
-    this.router.post("/", (req, res) => this.userController.register(req, res));
+    this.router.post("/", (req, res) => this.userController.post(req, res));
   }
 }

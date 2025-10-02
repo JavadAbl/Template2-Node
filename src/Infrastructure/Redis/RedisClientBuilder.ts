@@ -11,9 +11,9 @@ export class RedisClientBuilder {
   static getClient(): ReturnType<typeof createClient> {
     if (!RedisClientBuilder.instance) {
       RedisClientBuilder.instance = createClient({
-        url: config.REDIS_ADDRESS || "redis://localhost:6379",
-        username: config.REDIS_USERNAME,
-        password: config.REDIS_PASSWORD,
+        url: config.REDIS_ADDRESS,
+        username: !config.isDev ? config.REDIS_USERNAME : undefined,
+        password: !config.isDev ? config.REDIS_PASSWORD : undefined,
       });
 
       RedisClientBuilder.instance.on("error", (err: unknown) => {

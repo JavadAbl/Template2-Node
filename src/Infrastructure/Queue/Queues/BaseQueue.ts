@@ -21,8 +21,8 @@ export class BaseQueue<T extends JobContract<any, any>> {
     this.queue = new bullmq.Queue(queueName, {
       connection: {
         url: config.REDIS_ADDRESS,
-        username: config.REDIS_USERNAME,
-        password: config.REDIS_PASSWORD,
+        username: !config.isDev ? config.REDIS_USERNAME : undefined,
+        password: !config.isDev ? config.REDIS_PASSWORD : undefined,
       },
       defaultJobOptions: {
         removeOnComplete: true,

@@ -11,6 +11,10 @@ class AppConfig {
   REDIS_USERNAME?: string;
   REDIS_PASSWORD?: string;
 
+  get isDev() {
+    return this.NODE_ENV === "development";
+  }
+
   constructor() {
     dotenv.config();
     this.NODE_ENV = process.env.NODE_ENV;

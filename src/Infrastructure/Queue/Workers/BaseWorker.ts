@@ -31,8 +31,8 @@ export class BaseWorker<T extends JobContract<any, any>> {
       {
         connection: {
           url: config.REDIS_ADDRESS,
-          username: config.REDIS_USERNAME,
-          password: config.REDIS_PASSWORD,
+          username: !config.isDev ? config.REDIS_USERNAME : undefined,
+          password: !config.isDev ? config.REDIS_PASSWORD : undefined,
         },
       },
     );

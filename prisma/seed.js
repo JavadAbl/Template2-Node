@@ -22,24 +22,21 @@ main()
   });
 
 //Seed Data--------------------------------------------------------------
-function users() {
-  return [
-    {
-      username: "Alice",
-      email: "alice@example.com",
-      password: hashSync("1", 10),
-    },
-    {
-      username: "Alice2",
-      email: "alice2@example.com",
-      password: hashSync("1", 10),
-    },
-    {
-      username: "e1",
-      email: "e1",
-      password: hashSync("p1", 10),
-    },
-  ];
+function users(count = 10) {
+  const users = [];
+
+  for (let i = 1; i <= count; i++) {
+    const username = `User${i}`;
+    const email = `${username.toLowerCase()}@example.com`;
+
+    // Use a deterministic password for the seed (e.g., "password{i}")
+    const rawPassword = `123`;
+    const passwordHash = hashSync(rawPassword, 10);
+
+    users.push({ username, email, password: passwordHash });
+  }
+
+  return users;
 }
 
 /* function products(count) {

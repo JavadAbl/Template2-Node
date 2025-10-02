@@ -1,6 +1,6 @@
 // UserJobsContract.ts
 
-import { IRegisterUser } from "#Domain/Dto/User/IRegisterUser.js";
+import { IRegisterUser } from "#API/Interfaces/Dto/User/IUserCreateDto.js";
 import { JobContract } from "./JobContract.js";
 
 export enum UserJobs {

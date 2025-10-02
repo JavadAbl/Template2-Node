@@ -8,6 +8,7 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 *.db
+src/Infrastructure/Database/Prisma
 
 # Environment variables
 .env
